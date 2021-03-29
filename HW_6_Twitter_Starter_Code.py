@@ -1,9 +1,9 @@
 #########################################
-##### Name:                         #####
-##### Uniqname:                     #####
+##### Name:    Yuheng Xie           #####
+##### Uniqname:       xieyuh        #####
 #########################################
 
-from requests_oauthlib import OAuth1
+#from requests_oauthlib import OAuth1
 import json
 import requests
 
@@ -23,11 +23,11 @@ oauth = OAuth1(client_key,
             resource_owner_secret=access_token_secret)
 
 def test_oauth():
-    ''' Helper function that returns an HTTP 200 OK response code and a 
+    Helper function that returns an HTTP 200 OK response code and a 
     representation of the requesting user if authentication was 
     successful; returns a 401 status code and an error message if 
     not. Only use this method to test if supplied user credentials are 
-    valid. Not used to achieve the goal of this assignment.'''
+    valid. Not used to achieve the goal of this assignment.
 
     url = "https://api.twitter.com/1.1/account/verify_credentials.json"
     auth = OAuth1(client_key, client_secret, access_token, access_token_secret)
@@ -97,7 +97,17 @@ def construct_unique_key(baseurl, params):
         the unique key as a string
     '''
     #TODO Implement function
-    pass
+    if params:
+        url = f"{baseurl}?"
+        for key,value in params:
+            url = f"{url}{key}={value}"
+            if n == 1:
+                url = f"{url}&"
+            n = 1
+        return url
+    else:
+        return baseurl
+
 
 
 def make_request(baseurl, params):
@@ -117,7 +127,11 @@ def make_request(baseurl, params):
         a dictionary
     '''
     #TODO Implement function
-    pass
+    baseurl = f"{baseurl}?"
+    if params:
+        return requests.get(baseurl, params, timeout=10).json()
+    else:
+        return requests.get(baseurl, timeout=10).json() # TODO Implement
 
 
 def make_request_with_cache(baseurl, hashtag, count):
@@ -138,9 +152,9 @@ def make_request_with_cache(baseurl, hashtag, count):
     baseurl: string
         The URL for the API endpoint
     hashtag: string
-        The hashtag to search for
+        The hashtag to search(i.e.#MarchMadness2021)
     count: integer
-        The number of results you request from Twitter
+        The number of tweets toretrieve
     
     Returns
     -------
@@ -149,7 +163,16 @@ def make_request_with_cache(baseurl, hashtag, count):
         JSON
     '''
     #TODO Implement function
-    pass
+    params = {'p':hashtag,'count':count}
+    dic = make_request(baseurl,params)
+    cache_dic = open_cache()
+    if dic == cache_dic:
+        print('fetching cached data')
+    else:
+        print('making new request')
+        save_cache(dic)
+
+    return open_cache()
 
 
 def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
@@ -183,19 +206,19 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
     
 
 if __name__ == "__main__":
-    if not client_key or not client_secret:
+    '''if not client_key or not client_secret:
         print("You need to fill in CLIENT_KEY and CLIENT_SECRET in secret_data.py.")
         exit()
     if not access_token or not access_token_secret:
         print("You need to fill in ACCESS_TOKEN and ACCESS_TOKEN_SECRET in secret_data.py.")
         exit()
-
+'''
     CACHE_DICT = open_cache()
 
     baseurl = "https://api.twitter.com/1.1/search/tweets.json"
     hashtag = "#MarchMadness2021"
     count = 100
-
     tweet_data = make_request_with_cache(baseurl, hashtag, count)
+    print(aaa['statuses'])
     most_common_cooccurring_hashtag = find_most_common_cooccurring_hashtag(tweet_data, hashtag)
     print("The most commonly cooccurring hashtag with {} is {}.".format(hashtag, most_common_cooccurring_hashtag))

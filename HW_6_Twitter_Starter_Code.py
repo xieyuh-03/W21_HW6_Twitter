@@ -23,12 +23,12 @@ oauth = OAuth1(client_key,
             resource_owner_secret=access_token_secret)
 
 def test_oauth():
-    Helper function that returns an HTTP 200 OK response code and a 
+    '''Helper function that returns an HTTP 200 OK response code and a 
     representation of the requesting user if authentication was 
     successful; returns a 401 status code and an error message if 
     not. Only use this method to test if supplied user credentials are 
     valid. Not used to achieve the goal of this assignment.
-
+    '''
     url = "https://api.twitter.com/1.1/account/verify_credentials.json"
     auth = OAuth1(client_key, client_secret, access_token, access_token_secret)
     authentication_state = requests.get(url, auth=auth).json()
@@ -195,7 +195,38 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
 
     '''
     # TODO: Implement function 
-    pass
+    hashtag={}
+    name=''
+    for item in tweet_data['statuses']:
+       for info in item['hashtages']:
+           if info['text']:
+               hashtag{info['text']} = 0   # create dic with hashtag name as key and number 0 as value
+            else:
+                break  # break when the list is empty
+
+    for item in tweet_data['statuses']:
+       for info in item['hashtages']:
+           if info['text']:
+               hashtag{info['text']} += 1   # add 1 to the value each time the hastag name shows
+            else:
+                break
+
+    max_num = hashtag[hashtag_to_ignore]
+    sec_num = 0
+    for key in hashtag:
+        if hashtag[key] == hashtag_to_ignore:  # ignore the searching hashtag
+            break
+        else:
+            if hashtag[key] > sec_num:
+                sec_num = hashtag[key]
+                name = key
+            else:
+                break
+
+    return name
+
+
+
     ''' Hint: In case you're confused about the hashtag_to_ignore 
     parameter, we want to ignore the hashtag we queried because it would 
     definitely be the most occurring hashtag, and we're trying to find 
@@ -206,19 +237,21 @@ def find_most_common_cooccurring_hashtag(tweet_data, hashtag_to_ignore):
     
 
 if __name__ == "__main__":
-    '''if not client_key or not client_secret:
+    dic = {'a':'b','c':'d'}
+    print(dic)
+
+    if not client_key or not client_secret:
         print("You need to fill in CLIENT_KEY and CLIENT_SECRET in secret_data.py.")
         exit()
     if not access_token or not access_token_secret:
         print("You need to fill in ACCESS_TOKEN and ACCESS_TOKEN_SECRET in secret_data.py.")
         exit()
-'''
+
     CACHE_DICT = open_cache()
 
     baseurl = "https://api.twitter.com/1.1/search/tweets.json"
     hashtag = "#MarchMadness2021"
     count = 100
     tweet_data = make_request_with_cache(baseurl, hashtag, count)
-    print(aaa['statuses'])
     most_common_cooccurring_hashtag = find_most_common_cooccurring_hashtag(tweet_data, hashtag)
     print("The most commonly cooccurring hashtag with {} is {}.".format(hashtag, most_common_cooccurring_hashtag))
